@@ -17,7 +17,9 @@ its own. Every file modified by the raftseg authors says so in its header.
       - Module path and import comment changed from
         github.com/golang/snappy to this module.
       - gofmt added //go:build lines and reformatted comments.
-      - Tests were added, and decoding changed as FORK.md describes.
+      - The Go code is built on every platform, renamed, so that tests can
+        compare it with the assembly; Decode bounds the length it
+        allocates for; tests were added. FORK.md describes each change.
       - README was renamed to UPSTREAM-README.
 
 internal/  (used by tests only)

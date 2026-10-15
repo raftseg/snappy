@@ -8,8 +8,11 @@ with assembly for amd64 and arm64 and pure Go elsewhere.
 - **No dependencies:** `go.mod` requires nothing, and every package, tests
   included, imports only the Go standard library and this module.
   `internal/depcheck` fails the tests otherwise.
-- **Same API and format as upstream.** [FORK.md](FORK.md) lists every
-  change.
+- **Same API and format as upstream.** `Decode` refuses, before
+  allocating, a length its input cannot decode to. [FORK.md](FORK.md)
+  lists every change.
+- **Differential tests:** the assembly and the Go code are built side by
+  side and must agree on valid, damaged and arbitrary input.
 
 Upstream's README is [UPSTREAM-README](UPSTREAM-README). The license is
 upstream's, BSD 3-Clause ([LICENSE](LICENSE), [AUTHORS](AUTHORS));
@@ -31,6 +34,7 @@ bound on the length header's size, is taken.
 go test ./...
 go test -tags noasm ./...     # the pure Go code in place of the assembly
 go test -short -race ./...
+go test -run XXX -fuzz FuzzDecode .    # and FuzzEncode, FuzzReader, FuzzStream
 ```
 
 snappy is maintained alongside [raftseg](https://github.com/raftseg/raftseg).

@@ -1,6 +1,9 @@
 // Copyright 2011 The Snappy-Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+//
+// Modified by the raftseg authors. Fork: Decode refuses, before allocating,
+// a decoded length its input cannot produce (see maxDecodedLen).
 
 package snappy
 
@@ -42,6 +45,15 @@ func decodedLen(src []byte) (blockLen, headerLen int, err error) {
 	return int(v), n, nil
 }
 
+// maxDecodedLen is the most that n bytes of encoded block (after the length
+// header) can decode to. A literal decodes to fewer bytes than it takes; a
+// 1-byte-offset copy takes 2 bytes and writes at most 11; a 2- or 4-byte-
+// offset copy takes 3 or 5 bytes and writes at most 64. So the most is a
+// run of 3-byte copies, plus a 2-byte one when 2 bytes are left. Fork.
+func maxDecodedLen(n int) uint64 {
+	return uint64(n)/3*64 + 11
+}
+
 const (
 	decodeErrCodeCorrupt                  = 1
 	decodeErrCodeUnsupportedLiteralLength = 2
@@ -58,6 +70,11 @@ func Decode(dst, src []byte) ([]byte, error) {
 	dLen, s, err := decodedLen(src)
 	if err != nil {
 		return nil, err
+	}
+	// Fork: without this, five bytes claiming a 4 GiB block make Decode
+	// allocate 4 GiB before finding the input corrupt.
+	if uint64(dLen) > maxDecodedLen(len(src)-s) {
+		return nil, ErrCorrupt
 	}
 	if dLen <= len(dst) {
 		dst = dst[:dLen]

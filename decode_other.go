@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 //
-// Modified by the raftseg authors: gofmt added a //go:build line.
-
-//go:build (!amd64 && !arm64) || appengine || !gc || noasm
-// +build !amd64,!arm64 appengine !gc noasm
+// Modified by the raftseg authors. Fork: this file is built everywhere and
+// its function renamed decodeGo, so that tests can compare it with the
+// assembly; pure.go makes it decode where there is no assembly.
 
 package snappy
 
-// decode writes the decoding of src to dst. It assumes that the varint-encoded
+// decodeGo writes the decoding of src to dst. It assumes that the varint-encoded
 // length of the decompressed bytes has already been read, and that len(dst)
 // equals that length.
 //
 // It returns 0 on success or a decodeErrCodeXxx error code on failure.
-func decode(dst, src []byte) int {
+func decodeGo(dst, src []byte) int {
 	var d, s, offset, length int
 	for s < len(src) {
 		switch src[s] & 0x03 {

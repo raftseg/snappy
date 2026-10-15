@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 //
-// Modified by the raftseg authors: gofmt added a //go:build line, and reformatted comments.
-
-//go:build (!amd64 && !arm64) || appengine || !gc || noasm
-// +build !amd64,!arm64 appengine !gc noasm
+// Modified by the raftseg authors: gofmt reformatted comments. Fork: this
+// file is built everywhere and its functions renamed with a Go suffix
+// (emitLiteralGo, emitCopyGo, extendMatchGo, encodeBlockGo), so that tests
+// can compare them with the assembly; pure.go makes them encode where there
+// is no assembly. encodeBlockGo calls the Go versions of the others.
 
 package snappy
 
@@ -20,13 +21,13 @@ func load64(b []byte, i int) uint64 {
 		uint64(b[4])<<32 | uint64(b[5])<<40 | uint64(b[6])<<48 | uint64(b[7])<<56
 }
 
-// emitLiteral writes a literal chunk and returns the number of bytes written.
+// emitLiteralGo writes a literal chunk and returns the number of bytes written.
 //
 // It assumes that:
 //
 //	dst is long enough to hold the encoded bytes
 //	1 <= len(lit) && len(lit) <= 65536
-func emitLiteral(dst, lit []byte) int {
+func emitLiteralGo(dst, lit []byte) int {
 	i, n := 0, uint(len(lit)-1)
 	switch {
 	case n < 60:
@@ -45,14 +46,14 @@ func emitLiteral(dst, lit []byte) int {
 	return i + copy(dst[i:], lit)
 }
 
-// emitCopy writes a copy chunk and returns the number of bytes written.
+// emitCopyGo writes a copy chunk and returns the number of bytes written.
 //
 // It assumes that:
 //
 //	dst is long enough to hold the encoded bytes
 //	1 <= offset && offset <= 65535
 //	4 <= length && length <= 65535
-func emitCopy(dst []byte, offset, length int) int {
+func emitCopyGo(dst []byte, offset, length int) int {
 	i := 0
 	// The maximum length for a single tagCopy1 or tagCopy2 op is 64 bytes. The
 	// threshold for this loop is a little higher (at 68 = 64 + 4), and the
@@ -92,13 +93,13 @@ func emitCopy(dst []byte, offset, length int) int {
 	return i + 2
 }
 
-// extendMatch returns the largest k such that k <= len(src) and that
+// extendMatchGo returns the largest k such that k <= len(src) and that
 // src[i:i+k-j] and src[j:k] have the same contents.
 //
 // It assumes that:
 //
 //	0 <= i && i < j && j <= len(src)
-func extendMatch(src []byte, i, j int) int {
+func extendMatchGo(src []byte, i, j int) int {
 	for ; j < len(src) && src[i] == src[j]; i, j = i+1, j+1 {
 	}
 	return j
@@ -108,7 +109,7 @@ func hash(u, shift uint32) uint32 {
 	return (u * 0x1e35a7bd) >> shift
 }
 
-// encodeBlock encodes a non-empty src to a guaranteed-large-enough dst. It
+// encodeBlockGo encodes a non-empty src to a guaranteed-large-enough dst. It
 // assumes that the varint-encoded length of the decompressed bytes has already
 // been written.
 //
@@ -116,7 +117,7 @@ func hash(u, shift uint32) uint32 {
 //
 //	len(dst) >= MaxEncodedLen(len(src)) &&
 //	minNonLiteralBlockSize <= len(src) && len(src) <= maxBlockSize
-func encodeBlock(dst, src []byte) (d int) {
+func encodeBlockGo(dst, src []byte) (d int) {
 	// Initialize the hash table. Its size ranges from 1<<8 to 1<<14 inclusive.
 	// The table element type is uint16, as s < sLimit and sLimit < len(src)
 	// and len(src) <= maxBlockSize and maxBlockSize == 65536.
@@ -188,7 +189,7 @@ func encodeBlock(dst, src []byte) (d int) {
 		// A 4-byte match has been found. We'll later see if more than 4 bytes
 		// match. But, prior to the match, src[nextEmit:s] are unmatched. Emit
 		// them as literal bytes.
-		d += emitLiteral(dst[d:], src[nextEmit:s])
+		d += emitLiteralGo(dst[d:], src[nextEmit:s])
 
 		// Call emitCopy, and then see if another emitCopy could be our next
 		// move. Repeat until we find no match for the input immediately after
@@ -206,12 +207,12 @@ func encodeBlock(dst, src []byte) (d int) {
 			// Extend the 4-byte match as long as possible.
 			//
 			// This is an inlined version of:
-			//	s = extendMatch(src, candidate+4, s+4)
+			//	s = extendMatchGo(src, candidate+4, s+4)
 			s += 4
 			for i := candidate + 4; s < len(src) && src[i] == src[s]; i, s = i+1, s+1 {
 			}
 
-			d += emitCopy(dst[d:], base-candidate, s-base)
+			d += emitCopyGo(dst[d:], base-candidate, s-base)
 			nextEmit = s
 			if s >= sLimit {
 				goto emitRemainder
@@ -239,7 +240,7 @@ func encodeBlock(dst, src []byte) (d int) {
 
 emitRemainder:
 	if nextEmit < len(src) {
-		d += emitLiteral(dst[d:], src[nextEmit:])
+		d += emitLiteralGo(dst[d:], src[nextEmit:])
 	}
 	return d
 }
