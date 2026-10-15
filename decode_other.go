@@ -4,7 +4,8 @@
 //
 // Modified by the raftseg authors. Fork: this file is built everywhere and
 // its function renamed decodeGo, so that tests can compare it with the
-// assembly; pure.go makes it decode where there is no assembly.
+// assembly; pure.go makes it decode where there is no assembly. A literal
+// too long for a 32-bit int is reported as corrupt input.
 
 package snappy
 
@@ -49,7 +50,11 @@ func decodeGo(dst, src []byte) int {
 			}
 			length = int(x) + 1
 			if length <= 0 {
-				return decodeErrCodeUnsupportedLiteralLength
+				// Fork: upstream returned decodeErrCodeUnsupportedLiteralLength.
+				// int(x)+1 overflows only where int has 32 bits, and a literal
+				// that long cannot fit in src there, so the input is corrupt,
+				// as it is reported on 64-bit platforms.
+				return decodeErrCodeCorrupt
 			}
 			if length > len(dst)-d || length > len(src)-s {
 				return decodeErrCodeCorrupt

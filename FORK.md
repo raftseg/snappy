@@ -62,3 +62,12 @@ Upstream's tests are kept unchanged. `fork_test.go` adds:
 `FuzzDecode`, `FuzzEncode`, `FuzzReader` and `FuzzStream` drive them from
 fuzzer input, and `TestDifferentialAndRoundTrip` runs them over a varied
 corpus in plain `go test`.
+
+## 32-bit platforms
+
+On a 32-bit platform, a literal whose length does not fit in an int made
+upstream's Go decoder return "unsupported literal length", and upstream's
+own `TestDecode` failed there, expecting "corrupt input" as on 64-bit
+platforms. Such a literal cannot fit in the input, so the decoder now
+reports it as corrupt everywhere. CI runs the tests with `GOARCH=386` as
+well.
