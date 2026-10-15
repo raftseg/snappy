@@ -1,1 +1,3 @@
-module github.com/golang/snappy
+module github.com/raftseg/snappy
+
+go 1.24

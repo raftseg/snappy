@@ -1,0 +1,24 @@
+snappy
+Copyright 2026 The raftseg authors.
+
+This module is a fork of Snappy-Go (github.com/golang/snappy) and contains
+its code, licensed under the BSD 3-Clause license in LICENSE. AUTHORS lists
+the copyright holders that license names. Upstream ships no NOTICE file of
+its own. Every file modified by the raftseg authors says so in its header.
+
+./  (the whole module except internal/)
+    Origin:     github.com/golang/snappy v1.0.0
+                https://github.com/golang/snappy, tag v1.0.0,
+                commit 43d5d4cd4e0e3390b0b645d5c3ef1187642403d8,
+                plus upstream commit b6a66aa0e1517e1e9d255d6d6cc750d1a975b543
+    Copyright:  The Snappy-Go Authors
+    License:    LICENSE (BSD 3-Clause)
+    Changes:
+      - Module path and import comment changed from
+        github.com/golang/snappy to this module.
+      - gofmt added //go:build lines and reformatted comments.
+      - Tests were added, and decoding changed as FORK.md describes.
+      - README was renamed to UPSTREAM-README.
+
+internal/  (used by tests only)
+    Written by the raftseg authors.

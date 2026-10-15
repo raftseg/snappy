@@ -1,6 +1,8 @@
 // Copyright 2011 The Snappy-Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+//
+// Modified by the raftseg authors: the import comment names this fork's module.
 
 // Package snappy implements the Snappy compression format. It aims for very
 // high speeds and reasonable compression.
@@ -17,7 +19,7 @@
 //
 // The canonical, C++ implementation is at https://github.com/google/snappy and
 // it only implements the block format.
-package snappy // import "github.com/golang/snappy"
+package snappy // import "github.com/raftseg/snappy"
 
 import (
 	"hash/crc32"

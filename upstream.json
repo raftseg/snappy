@@ -1,0 +1,17 @@
+{
+  "comment": "Where this fork comes from, for SBOMs. Update cherryPicked with every commit taken from upstream.",
+  "module": "github.com/golang/snappy",
+  "version": "v1.0.0",
+  "repository": "https://github.com/golang/snappy",
+  "commit": "43d5d4cd4e0e3390b0b645d5c3ef1187642403d8",
+  "sum": "h1:Oy607GVXHs7RtbggtPBnr2RmDArIsAefDwvrdWvRhGs=",
+  "license": "BSD-3-Clause",
+  "copyright": "The Snappy-Go Authors",
+  "changes": "FORK.md",
+  "cherryPicked": [
+    {
+      "commit": "b6a66aa0e1517e1e9d255d6d6cc750d1a975b543",
+      "subject": "Limit length of varint in decodedLen"
+    }
+  ]
+}

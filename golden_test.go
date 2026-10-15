@@ -1,6 +1,8 @@
 // Copyright 2016 The Snappy-Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+//
+// Modified by the raftseg authors: gofmt reformatted comments.
 
 package snappy
 
@@ -13,11 +15,11 @@ package snappy
 // encodeBlock implementation (in encode_other.go) to replace the inlined
 // version of extendMatch.
 //
-//      s += 4
-//      s0 := s
-//      for i := candidate + 4; s < len(src) && src[i] == src[s]; i, s = i+1, s+1 {
-//      }
-//      println("{", candidate + 4, ",", s0, ",", s, "},")
+//	s += 4
+//	s0 := s
+//	for i := candidate + 4; s < len(src) && src[i] == src[s]; i, s = i+1, s+1 {
+//	}
+//	println("{", candidate + 4, ",", s0, ",", s, "},")
 //
 // and running "go test -test.run=EncodeGoldenInput -tags=noasm".
 var extendMatchGoldenTestCases = []struct {

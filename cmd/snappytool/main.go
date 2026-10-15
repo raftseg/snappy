@@ -1,3 +1,8 @@
+// Part of Snappy-Go, whose source files are distributed under the BSD-style
+// license in the LICENSE file (upstream's README).
+//
+// Modified by the raftseg authors: the import path names this fork's module.
+
 package main
 
 import (
@@ -6,7 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/golang/snappy"
+	"github.com/raftseg/snappy"
 )
 
 var (

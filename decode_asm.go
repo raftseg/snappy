@@ -1,7 +1,10 @@
 // Copyright 2016 The Snappy-Go Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
+//
+// Modified by the raftseg authors: gofmt added a //go:build line.
 
+//go:build !appengine && gc && !noasm && (amd64 || arm64)
 // +build !appengine
 // +build gc
 // +build !noasm
